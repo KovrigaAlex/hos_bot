@@ -1,6 +1,7 @@
-from app.database.models import async_session
-from app.database.models import User, Category, Item
 from sqlalchemy import select
+
+from app.database.models import (Income, Outcome, TankVolume, User,
+                                 async_session)
 
 
 async def set_user(tg_id: int) -> None:
@@ -12,16 +13,28 @@ async def set_user(tg_id: int) -> None:
             await session.commit()
 
 
-async def get_categories():
+async def set_income(date, time, concentration):
     async with async_session() as session:
-        return await session.scalars(select(Category))
+        session.add(Income(date=date, time=time, concentration=concentration))
+        await session.commit()
 
 
-async def get_category_item(category_id):
+async def set_outcome(date, time, concentration):
     async with async_session() as session:
-        return await session.scalars(select(Item).where(Item.category == category_id))
+        session.add(Outcome(date=date, time=time, concentration=concentration))
+        await session.commit()
 
 
-async def get_item(item_id):
+async def get_income(item_id):
     async with async_session() as session:
-        return await session.scalar(select(Item).where(Item.id == item_id))
+        return await session.scalar(select(Income).where(Income.id == item_id))
+
+
+async def get_outcome(item_id):
+    async with async_session() as session:
+        return await session.scalar(select(Outcome).where(Outcome.id == item_id))
+
+
+async def get_tank_volume(item_id):
+    async with async_session() as session:
+        return await session.scalar(select(TankVolume).where(TankVolume.id == item_id))

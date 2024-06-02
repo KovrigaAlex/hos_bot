@@ -1,6 +1,10 @@
-from sqlalchemy import BigInteger, String, ForeignKey
+import datetime
+
+from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String
+from sqlalchemy.ext.asyncio import (AsyncAttrs, async_sessionmaker,
+                                    create_async_engine)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
+from sqlalchemy.sql import func
 
 engine = create_async_engine(url='sqlite+aiosqlite:///db.sqlite3')
 
@@ -13,26 +17,41 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 class User(Base):
     __tablename__ = 'users'
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     tg_id = mapped_column(BigInteger)
 
 
-class Category(Base):
-    __tablename__ = 'categories'
-    
+class Income(Base):
+    __tablename__ = 'income'
+
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(25))
+    created_date: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now())
+    date: Mapped[datetime.date] = mapped_column()
+    time: Mapped[datetime.time] = mapped_column()
+    concentration: Mapped[str] = mapped_column()
 
 
-class Item(Base):
-    __tablename__ = 'items'
-    
+class Outcome(Base):
+    __tablename__ = 'outcome'
+
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(25))
-    description: Mapped[str] = mapped_column(String(120))
-    price: Mapped[int] = mapped_column()
-    category: Mapped[int] = mapped_column(ForeignKey('categories.id'))
+    created_date: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now())
+    date: Mapped[datetime.date] = mapped_column()
+    time: Mapped[datetime.time] = mapped_column()
+    concentration: Mapped[str] = mapped_column()
+
+
+class TankVolume(Base):
+    __tablename__ = 'volume'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    created_date: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now())
+    volume: Mapped[int] = mapped_column()
+    tank_name: Mapped[str] = mapped_column()
 
 
 async def async_main():
