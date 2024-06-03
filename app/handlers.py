@@ -18,11 +18,13 @@ class IncomeInput(StatesGroup):
     input_concentration = State()
 
 
+
 @router.message(StateFilter(None), Command("Откачка"))
 async def date_chose(message: Message, state: FSMContext):
     await message.answer(
         text="Выберите дату:",
         reply_markup=kb.make_date_keyboard()
+        reply_markup.
     )
     # Устанавливаем пользователю состояние "выбирает название"
     await state.set_state(IncomeInput.choosing_date)
@@ -35,7 +37,7 @@ async def hour_choose(message: Message, state: FSMContext):
     await state.update_data(chosen_date=message.text.lower())
     await message.answer(
         text="Выбирите час",
-        reply_markup=kb.make_hour_keyboard()
+        reply_markup=kb.make_hour_minute_keyboard('hour')
     )
     await state.set_state(IncomeInput.choosing_hour)
 
@@ -47,7 +49,7 @@ async def minute_choose(message: Message, state: FSMContext):
     await state.update_data(choosing_hour=message.text.lower())
     await message.answer(
         text="Выбирите минуту",
-        reply_markup=kb.make_minute_keyboard()
+        reply_markup=kb.make_hour_minute_keyboard('minute')
     )
     await state.set_state(IncomeInput.choosing_minute)
 
@@ -78,6 +80,19 @@ async def hos_choose(message: Message, state: FSMContext):
         user_data['choosing_hour']+':'+user_data['choosing_minute'], '%H:%M').time()
     await set_income(date=date, time=time, concentration=user_data['choosing_hos'])
     await state.clear()
+
+
+class OutcimeInput(StatesGroup):
+    choosing_date = State()
+    choosing_hour = State()
+    choosing_minute = State()
+    input_concentration = State()
+
+
+
+
+
+
 
 
 @router.message(CommandStart())
